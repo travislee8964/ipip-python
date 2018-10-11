@@ -19,7 +19,6 @@ def unpack(b, mode):
 class IP:
     offset = 0
     binary = ''
-    index = ''
 
     @staticmethod
     def load(file):
@@ -28,7 +27,6 @@ class IP:
             with open(path, 'rb') as f:
                 IP.binary = f.read()
                 IP.offset, = unpack(IP.binary[:4], N)
-                IP.index = IP.binary[4:IP.offset]
         except Exception as ex:
             print('cannot open file {0}'.format(file))
             print(ex.message)
@@ -36,7 +34,6 @@ class IP:
 
     @staticmethod
     def find(ip):
-        index = IP.index
         offset = IP.offset
         binary = IP.binary
         nip = inet_aton(ip)
@@ -44,16 +41,16 @@ class IP:
         if int(ipdot[0]) < 0 or int(ipdot[0]) > 255 or len(ipdot) != 4:
             return 'N/A'
 
-        tmp_offset = int(ipdot[0]) * 4
-        start, = unpack(index[tmp_offset:tmp_offset + 4], V)
+        tmp_offset = int(ipdot[0]) * 4 + 4
+        start, = unpack(binary[tmp_offset:tmp_offset + 4], V)
 
         index_offset = index_length = 0
         max_comp_len = offset - 1028
         start = start * 8 + 1024
         while start < max_comp_len:
-            if index[start:start + 4] >= nip:
-                index_offset, = unpack(index[start + 4:start + 7] + chr(0).encode('utf-8'), V)
-                index_length, = unpack(index[start + 7:start + 8], C)
+            if binary[start + 4:start + 8] >= nip:
+                index_offset, = unpack(binary[start + 8:start + 11] + chr(0).encode('utf-8'), V)
+                index_length, = unpack(binary[start + 11:start + 12], C)
                 break
             start += 8
 
@@ -67,7 +64,6 @@ class IP:
 class IPX:
     offset = 0
     binary = ''
-    index = ''
 
     @staticmethod
     def load(file):
@@ -76,7 +72,6 @@ class IPX:
             with open(path, 'rb') as f:
                 IPX.binary = f.read()
                 IPX.offset, = unpack(IPX.binary[:4], N)
-                IPX.index = IPX.binary[4:IPX.offset]
         except Exception as ex:
             print('cannot open file {0}'.format(file))
             print(ex.message)
@@ -84,7 +79,6 @@ class IPX:
 
     @staticmethod
     def find(ip):
-        index = IPX.index
         offset = IPX.offset
         binary = IPX.binary
         nip = inet_aton(ip)
@@ -92,17 +86,17 @@ class IPX:
         if int(ipdot[0]) < 0 or int(ipdot[0]) > 255 or len(ipdot) != 4:
             return 'N/A'
 
-        tmp_offset = (int(ipdot[0]) * 256 + int(ipdot[1])) * 4
-        start, = unpack(index[tmp_offset:tmp_offset + 4], V)
+        tmp_offset = (int(ipdot[0]) * 256 + int(ipdot[1])) * 4 + 4
+        start, = unpack(binary[tmp_offset:tmp_offset + 4], V)
 
         index_offset = index_length = -1
         max_comp_len = offset - 262144 - 4
         start = start * 9 + 262144
 
         while start < max_comp_len:
-            if index[start:start + 4] >= nip:
-                index_offset, = unpack(index[start + 4:start + 7] + chr(0).encode('utf-8'), V)
-                index_length, = unpack(index[start + 8:start + 9], C)
+            if binary[start + 4:start + 8] >= nip:
+                index_offset, = unpack(binary[start + 8:start + 11] + chr(0).encode('utf-8'), V)
+                index_length, = unpack(binary[start + 12:start + 13], C)
                 break
             start += 9
 

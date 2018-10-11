@@ -1,4 +1,4 @@
-# python
+# ipip-python
 
 示例代码
 
@@ -6,11 +6,11 @@
     from ipip import IP
     from ipip import IPX
 
-    IP.load(os.path.abspath("mydata4vipday2.dat"))
-    print IP.find("118.28.8.8")
+    IP.load(os.path.abspath('mydata4vipday2.dat'))
+    print(IP.find('118.28.8.8'))
 
-    IPX.load(os.path.abspath("mydata4vipday2.datx"))
-    print IPX.find("118.28.8.8")
+    IPX.load(os.path.abspath('mydata4vipday2.datx'))
+    print(IPX.find('118.28.8.8'))
 
 
 执行输出

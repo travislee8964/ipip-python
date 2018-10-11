@@ -1,0 +1,14 @@
+!.gitignore
+
+# macOS
+._*
+.DS_Store
+
+# Vim
+*.swp
+.idea
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+

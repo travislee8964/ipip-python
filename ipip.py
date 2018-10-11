@@ -6,9 +6,15 @@ import struct
 from socket import inet_aton
 import os
 
-_unpack_V = lambda b: struct.unpack("<L", b)
-_unpack_N = lambda b: struct.unpack(">L", b)
-_unpack_C = lambda b: struct.unpack("B", b)
+unpack_list = (V, N, C) = ('<L', '>L', 'B')
+
+
+def unpack(b, mode):
+    if mode in unpack_list:
+        return struct.unpack(mode, b)
+    else:
+        return
+
 
 class IP:
     offset = 0
@@ -21,7 +27,7 @@ class IP:
             path = os.path.abspath(file)
             with open(path, "rb") as f:
                 IP.binary = f.read()
-                IP.offset, = _unpack_N(IP.binary[:4])
+                IP.offset, = unpack(IP.binary[:4], N)
                 IP.index = IP.binary[4:IP.offset]
         except Exception as ex:
             print("cannot open file %s" % file)
@@ -39,15 +45,15 @@ class IP:
             return "N/A"
 
         tmp_offset = int(ipdot[0]) * 4
-        start, = _unpack_V(index[tmp_offset:tmp_offset + 4])
+        start, = unpack(index[tmp_offset:tmp_offset + 4], V)
 
         index_offset = index_length = 0
         max_comp_len = offset - 1028
         start = start * 8 + 1024
         while start < max_comp_len:
             if index[start:start + 4] >= nip:
-                index_offset, = _unpack_V(index[start + 4:start + 7] + chr(0).encode('utf-8'))
-                index_length, = _unpack_C(index[start + 7:start + 8])
+                index_offset, = unpack(index[start + 4:start + 7] + chr(0).encode('utf-8'), V)
+                index_length, = unpack(index[start + 7:start + 8], C)
                 break
             start += 8
 
@@ -69,7 +75,7 @@ class IPX:
             path = os.path.abspath(file)
             with open(path, "rb") as f:
                 IPX.binary = f.read()
-                IPX.offset, = _unpack_N(IPX.binary[:4])
+                IPX.offset, = unpack(IPX.binary[:4], N)
                 IPX.index = IPX.binary[4:IPX.offset]
         except Exception as ex:
             print("cannot open file %s" % file)
@@ -87,7 +93,7 @@ class IPX:
             return "N/A"
 
         tmp_offset = (int(ipdot[0]) * 256 + int(ipdot[1])) * 4
-        start, = _unpack_V(index[tmp_offset:tmp_offset + 4])
+        start, = unpack(index[tmp_offset:tmp_offset + 4], V)
 
         index_offset = index_length = -1
         max_comp_len = offset - 262144 - 4
@@ -95,8 +101,8 @@ class IPX:
 
         while start < max_comp_len:
             if index[start:start + 4] >= nip:
-                index_offset, = _unpack_V(index[start + 4:start + 7] + chr(0).encode('utf-8'))
-                index_length, = _unpack_C(index[start + 8:start + 9])
+                index_offset, = unpack(index[start + 4:start + 7] + chr(0).encode('utf-8'), V)
+                index_length, = unpack(index[start + 8:start + 9], C)
                 break
             start += 9
 

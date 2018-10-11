@@ -18,19 +18,19 @@ def unpack(b, mode):
 
 class IP:
     offset = 0
-    index = 0
-    binary = ""
+    binary = ''
+    index = ''
 
     @staticmethod
     def load(file):
         try:
             path = os.path.abspath(file)
-            with open(path, "rb") as f:
+            with open(path, 'rb') as f:
                 IP.binary = f.read()
                 IP.offset, = unpack(IP.binary[:4], N)
                 IP.index = IP.binary[4:IP.offset]
         except Exception as ex:
-            print("cannot open file %s" % file)
+            print('cannot open file {0}'.format(file))
             print(ex.message)
             exit(0)
 
@@ -42,7 +42,7 @@ class IP:
         nip = inet_aton(ip)
         ipdot = ip.split('.')
         if int(ipdot[0]) < 0 or int(ipdot[0]) > 255 or len(ipdot) != 4:
-            return "N/A"
+            return 'N/A'
 
         tmp_offset = int(ipdot[0]) * 4
         start, = unpack(index[tmp_offset:tmp_offset + 4], V)
@@ -58,27 +58,27 @@ class IP:
             start += 8
 
         if index_offset == 0:
-            return "N/A"
+            return 'N/A'
 
         res_offset = offset + index_offset - 1024
         return binary[res_offset:res_offset + index_length].decode('utf-8')
 
 
 class IPX:
-    binary = ""
-    index = 0
     offset = 0
+    binary = ''
+    index = ''
 
     @staticmethod
     def load(file):
         try:
             path = os.path.abspath(file)
-            with open(path, "rb") as f:
+            with open(path, 'rb') as f:
                 IPX.binary = f.read()
                 IPX.offset, = unpack(IPX.binary[:4], N)
                 IPX.index = IPX.binary[4:IPX.offset]
         except Exception as ex:
-            print("cannot open file %s" % file)
+            print('cannot open file {0}'.format(file))
             print(ex.message)
             exit(0)
 
@@ -90,7 +90,7 @@ class IPX:
         nip = inet_aton(ip)
         ipdot = ip.split('.')
         if int(ipdot[0]) < 0 or int(ipdot[0]) > 255 or len(ipdot) != 4:
-            return "N/A"
+            return 'N/A'
 
         tmp_offset = (int(ipdot[0]) * 256 + int(ipdot[1])) * 4
         start, = unpack(index[tmp_offset:tmp_offset + 4], V)
@@ -107,7 +107,7 @@ class IPX:
             start += 9
 
         if index_offset == 0:
-            return "N/A"
+            return 'N/A'
 
         res_offset = offset + index_offset - 262144
         return binary[res_offset:res_offset + index_length].decode('utf-8')
